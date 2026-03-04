@@ -126,7 +126,6 @@ func (b *ContextBuilder) buildIdentityAndTools() string {
 
 	// 定义核心工具摘要 - 参考了 OpenClaw 的详细描述风格
 	coreToolSummaries := map[string]string{
-		"smart_search":           "Intelligent search with automatic fallback ( ALWAYS use for search requests - has browser fallback)",
 		"browser_navigate":       "Navigate to a URL and wait for page load",
 		"browser_screenshot":     "Take page screenshots for visual analysis",
 		"browser_get_text":       "Get page text content (extracts readable text from DOM)",
@@ -153,7 +152,7 @@ func (b *ContextBuilder) buildIdentityAndTools() string {
 		// Shell 命令
 		"run_shell", "process",
 		// 浏览器工具
-		"smart_search", "browser_navigate", "browser_screenshot", "browser_get_text",
+		"browser_navigate", "browser_screenshot", "browser_get_text",
 		"browser_click", "browser_fill_input", "browser_execute_script",
 		// 网络
 		"web_search", "web_fetch",
@@ -202,7 +201,7 @@ TOOLS.md does not control tool availability; it is user guidance for how to use 
 
 ### Core Rules
 
-- For ANY search request ("search for", "find", "google search", etc.): IMMEDIATELY call smart_search tool. DO NOT provide manual instructions or advice.
+- For ANY search request ("search for", "find", "google search", etc.): IMMEDIATELY call web_search tool. DO NOT provide manual instructions or advice.
 - When the user asks for information: USE YOUR TOOLS to get it. Do NOT explain how to get it.
 - DO NOT tell the user "I cannot" or "here's how to do it yourself". ACTUALLY DO IT with tools.
 - If you have tools available for a task, use them. No permission needed for safe operations.
@@ -233,11 +232,11 @@ func (b *ContextBuilder) buildToolCallStyle() string {
 
 User: "What's the weather in Shanghai?"
 ❌ "You can check the weather by running curl wttr.in/Shanghai..."
-✅ (Calls: smart_search with query "weather Shanghai") -> "Shanghai: 22°C, Sunny"
+✅ (Calls: web_search with query "weather Shanghai") -> "Shanghai: 22°C, Sunny"
 
 User: "Search for information about goclaw"
 ❌ "Here are some resources you can check..."
-✅ (Calls: smart_search with query "goclaw") -> Shows search results
+✅ (Calls: web_search with query "goclaw") -> Shows search results
 
 User: "List files in the current directory."
 ❌ "To list files, use the ls command."
@@ -252,8 +251,7 @@ User: "Create a hello world python script."
 When a tool fails, try alternatives in this order:
 
 1. **Different tool with same goal**:
-   - web_search → smart_search (has browser fallback)
-   - browser_navigate → web_fetch → curl
+   - web_search → browser_navigate → web_fetch → curl
    - read_file → cat via run_shell
 
 2. **Different parameters**:

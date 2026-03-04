@@ -164,15 +164,6 @@ func runAgent(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	// Register smart search tool
-	browserTimeout := 30
-	if cfg.Tools.Browser.Timeout > 0 {
-		browserTimeout = cfg.Tools.Browser.Timeout
-	}
-	if err := toolRegistry.RegisterExisting(tools.NewSmartSearch(webTool, true, browserTimeout).GetTool()); err != nil && agentVerbose {
-		fmt.Fprintf(os.Stderr, "Warning: Failed to register smart_search: %v\n", err)
-	}
-
 	// Register browser tool if enabled
 	if cfg.Tools.Browser.Enabled {
 		browserTool := tools.NewBrowserTool(

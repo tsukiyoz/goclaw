@@ -74,9 +74,6 @@ func NewTUIAgent(
 		_ = toolRegistry.RegisterExisting(tool)
 	}
 
-	// Register smart search
-	_ = toolRegistry.RegisterExisting(tools.NewSmartSearch(webTool, true, 30).GetTool())
-
 	// Register browser tool
 	browserTool := tools.NewBrowserTool(true, 30)
 	for _, tool := range browserTool.GetTools() {
@@ -835,7 +832,7 @@ func formatToolError(toolName string, params map[string]interface{}, err error, 
 			"2. **列出目录**: 使用 `list_dir` 工具查看目录内容",
 			"3. **使用相对路径**: 尝试使用 `./filename`",
 		}
-	case "smart_search", "web_search":
+	case "web_search":
 		suggestions = []string{
 			"1. **简化查询**: 使用更简单的关键词",
 			"2. **稍后重试**: 网络暂时不可用",

@@ -43,7 +43,7 @@ func NewOrchestrator(config *LoopConfig, initialState *AgentState) *Orchestrator
 	return &Orchestrator{
 		config:    config,
 		state:     initialState,
-		eventChan: make(chan *Event, 100),
+		eventChan: make(chan *Event, 1000),
 	}
 }
 
@@ -534,10 +534,17 @@ func (o *Orchestrator) executeToolCalls(ctx context.Context, toolCalls []ToolCal
 	return results, nil
 }
 
-// emit sends an event to the event channel
+// emit sends an event to the event channel (non-blocking)
+// If the channel is full, the event is dropped to avoid blocking
 func (o *Orchestrator) emit(event *Event) {
 	if o.eventChan != nil {
-		o.eventChan <- event
+		select {
+		case o.eventChan <- event:
+			// Event sent successfully
+		default:
+			// Channel full, drop event to avoid blocking
+			// This is acceptable as events are primarily for streaming/logging
+		}
 	}
 }
 

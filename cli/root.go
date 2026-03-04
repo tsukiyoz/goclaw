@@ -265,15 +265,6 @@ func runStart(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	// 注册智能搜索工具（支持 web search 失败时自动回退到 Google browser 搜索）
-	browserTimeout := 30
-	if cfg.Tools.Browser.Timeout > 0 {
-		browserTimeout = cfg.Tools.Browser.Timeout
-	}
-	if err := toolRegistry.RegisterExisting(tools.NewSmartSearch(webTool, true, browserTimeout).GetTool()); err != nil {
-		logger.Warn("Failed to register smart_search tool", zap.Error(err))
-	}
-
 	// 注册浏览器工具（如果启用）
 	if cfg.Tools.Browser.Enabled {
 		browserTool := tools.NewBrowserTool(
