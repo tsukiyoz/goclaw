@@ -620,6 +620,67 @@ func (m *Manager) SetupFromConfig(cfg *config.Config) error {
 		}
 	}
 
+	// Gotify 通道
+	if cfg.Channels.Gotify.Enabled {
+		if len(cfg.Channels.Gotify.Accounts) > 0 {
+			// 多账号配置
+			for accountID, accountCfg := range cfg.Channels.Gotify.Accounts {
+				if accountCfg.Enabled && accountCfg.ServerURL != "" && accountCfg.AppToken != "" {
+					gfCfg := GotifyConfig{
+						BaseChannelConfig: BaseChannelConfig{
+							Enabled:    accountCfg.Enabled,
+							AccountID:  accountID,
+							Name:       accountCfg.Name,
+							AllowedIDs: accountCfg.AllowedIDs,
+						},
+						ServerURL: accountCfg.ServerURL,
+						AppToken:  accountCfg.AppToken,
+						Priority:  accountCfg.Priority,
+					}
+
+					channel, err := NewGotifyChannel(accountID, gfCfg, m.bus)
+					if err != nil {
+						logger.Error("Failed to create Gotify channel",
+							zap.String("account_id", accountID),
+							zap.Error(err))
+					} else {
+						channelName := buildChannelName("gotify", accountID)
+						if err := m.RegisterWithName(channel, channelName); err != nil {
+							logger.Error("Failed to register Gotify channel",
+								zap.String("account_id", accountID),
+								zap.Error(err))
+						} else {
+							logger.Info("Gotify channel registered",
+								zap.String("account_id", accountID),
+								zap.String("name", channelName))
+						}
+					}
+				}
+			}
+		} else if cfg.Channels.Gotify.ServerURL != "" && cfg.Channels.Gotify.AppToken != "" {
+			// 单账号配置（向后兼容）
+			gfCfg := GotifyConfig{
+				BaseChannelConfig: BaseChannelConfig{
+					Enabled:    cfg.Channels.Gotify.Enabled,
+					AccountID:  "default",
+					AllowedIDs: cfg.Channels.Gotify.AllowedIDs,
+				},
+				ServerURL: cfg.Channels.Gotify.ServerURL,
+				AppToken:  cfg.Channels.Gotify.AppToken,
+				Priority:  cfg.Channels.Gotify.Priority,
+			}
+
+			channel, err := NewGotifyChannel("default", gfCfg, m.bus)
+			if err != nil {
+				logger.Error("Failed to create Gotify channel", zap.Error(err))
+			} else {
+				if err := m.Register(channel); err != nil {
+					logger.Error("Failed to register Gotify channel", zap.Error(err))
+				}
+			}
+		}
+	}
+
 	return nil
 }
 

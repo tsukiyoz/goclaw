@@ -66,6 +66,23 @@
           "allowed_ids": []
         }
       }
+    },
+    "gotify": {
+      "enabled": false,
+      "server_url": "https://gotify.example.com",
+      "app_token": "",
+      "priority": 5,
+      "allowed_ids": [],
+      "accounts": {
+        "app1": {
+          "enabled": false,
+          "name": "Gotify App 1",
+          "server_url": "https://gotify.example.com",
+          "app_token": "",
+          "priority": 5,
+          "allowed_ids": []
+        }
+      }
     }
   },
   "providers": {

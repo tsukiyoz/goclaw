@@ -102,6 +102,7 @@ type ChannelsConfig struct {
 	QQ       QQChannelConfig       `mapstructure:"qq" json:"qq"`
 	WeWork   WeWorkChannelConfig   `mapstructure:"wework" json:"wework"`
 	Infoflow InfoflowChannelConfig `mapstructure:"infoflow" json:"infoflow"`
+	Gotify   GotifyChannelConfig   `mapstructure:"gotify" json:"gotify"`
 }
 
 // ChannelAccountConfig 通道账号配置（支持多账号）
@@ -121,6 +122,9 @@ type ChannelAccountConfig struct {
 	EncryptKey        string   `mapstructure:"encrypt_key" json:"encrypt_key"`               // Feishu encrypt key
 	VerificationToken string   `mapstructure:"verification_token" json:"verification_token"` // Feishu verification token
 	WebhookPort       int      `mapstructure:"webhook_port" json:"webhook_port"`             // Infoflow/Feishu webhook port
+	ServerURL         string   `mapstructure:"server_url" json:"server_url"`                 // Gotify server url
+	AppToken          string   `mapstructure:"app_token" json:"app_token"`                   // Gotify app token
+	Priority          int      `mapstructure:"priority" json:"priority"`                     // Gotify message priority 1-10
 	AllowedIDs        []string `mapstructure:"allowed_ids" json:"allowed_ids"`
 }
 
@@ -208,6 +212,17 @@ type InfoflowChannelConfig struct {
 	AESKey      string   `mapstructure:"aes_key" json:"aes_key"`
 	WebhookPort int      `mapstructure:"webhook_port" json:"webhook_port"`
 	AllowedIDs  []string `mapstructure:"allowed_ids" json:"allowed_ids"`
+	// 多账号配置（新格式）
+	Accounts map[string]ChannelAccountConfig `mapstructure:"accounts" json:"accounts"`
+}
+
+// GotifyChannelConfig Gotify 通道配置
+type GotifyChannelConfig struct {
+	Enabled    bool     `mapstructure:"enabled" json:"enabled"`
+	ServerURL  string   `mapstructure:"server_url" json:"server_url"`
+	AppToken   string   `mapstructure:"app_token" json:"app_token"`
+	Priority   int      `mapstructure:"priority" json:"priority"`   // 消息优先级 1-10
+	AllowedIDs []string `mapstructure:"allowed_ids" json:"allowed_ids"`
 	// 多账号配置（新格式）
 	Accounts map[string]ChannelAccountConfig `mapstructure:"accounts" json:"accounts"`
 }
